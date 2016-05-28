@@ -9,6 +9,8 @@ class Brew
 {
     var $cli, $files;
 
+    var $phpVersions = ['php70','php56','php55'];
+
     /**
      * Create a new Brew instance.
      *
@@ -137,15 +139,13 @@ class Brew
 
         $resolvedPath = $this->files->readLink('/usr/local/bin/php');
 
-        if (strpos($resolvedPath, 'php70') !== false) {
-            return 'php70';
-        } elseif (strpos($resolvedPath, 'php56') !== false) {
-            return 'php56';
-        } elseif (strpos($resolvedPath, 'php55') !== false) {
-            return 'php55';
-        } else {
-            throw new DomainException("Unable to determine linked PHP.");
+        foreach($this->phpVersions as $version) {
+            if (strpos($resolvedPath, $version) !== false) {
+                return $version;
+            }            
         }
+
+        throw new DomainException("Unable to determine linked PHP.");
     }
 
     /**
