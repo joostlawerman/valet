@@ -42,9 +42,12 @@ class Brew
      */
     function hasInstalledPhp()
     {
-        return $this->installed('php70')
-            || $this->installed('php56')
-            || $this->installed('php55');
+        foreach ($this->phpVersions as $version) {
+            if ($this->installed($version)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -134,7 +137,7 @@ class Brew
     function linkedPhp()
     {
         if (! $this->files->isLink('/usr/local/bin/php')) {
-            throw new DomainException("Unable to determine linked PHP.");
+            throw new DomainException('Unable to determine linked PHP.');
         }
 
         $resolvedPath = $this->files->readLink('/usr/local/bin/php');
@@ -142,10 +145,10 @@ class Brew
         foreach($this->phpVersions as $version) {
             if (strpos($resolvedPath, $version) !== false) {
                 return $version;
-            }            
+            }
         }
 
-        throw new DomainException("Unable to determine linked PHP.");
+        throw new DomainException('Unable to determine linked PHP.');
     }
 
     /**
@@ -156,6 +159,16 @@ class Brew
     function restartLinkedPhp()
     {
         $this->restartService($this->linkedPhp());
+    }
+
+    /**
+     * Stop PHP-FPM Homebrew service
+     *
+     * @return void
+     */
+    function stopPhp()
+    {
+        $this->stopService($this->phpVersions);
     }
 
     /**

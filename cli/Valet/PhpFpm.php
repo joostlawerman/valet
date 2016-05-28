@@ -42,9 +42,7 @@ class PhpFpm
      */
     public function install()
     {
-        if (! $this->brew->installed('php70') &&
-            ! $this->brew->installed('php56') &&
-            ! $this->brew->installed('php55')) {
+        if ($this->brew->hasInstalledPhp()) {
             $this->brew->ensureInstalled('php70', $this->taps);
         }
 
@@ -89,7 +87,7 @@ class PhpFpm
      */
     public function stop()
     {
-        $this->brew->stopService('php55', 'php56', 'php70');
+        $this->brew->stopPhp();
     }
 
     /**
